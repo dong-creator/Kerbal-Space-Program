@@ -1,0 +1,148 @@
+一般来说，mod可以按其使用性来划分(我自己个人理解划分的，不足之处请指出):
+       第一种MOD：部件MOD——装上去后增添了部件(新的引擎新的指令舱之类).比如(拿个人正在用的):Near Future Propulsion、Near Future Spacecraft、Near Future Solar、
+Near Future Electrical(虽然需要依赖Dynamic Battery Storage这个功能性MOD但主要还是增加部件)、ReStock和ReStock+等等
+
+
+       第二种MDO：功能性MOD——装上去后为游戏增添功能.比如你们都很熟的MechJeb2(MJ)、Environmental Visual Enhancements(EVE)、Module Manager以及各种美化MOD
+
+
+       第三种MOD：结合上面2种特性的MOD——既增添了部件又增加了功能.比如Kerbalism(目前版本3.2)、RemoteTech(版本1.95已支持中文)、各种维生MOD
+=======================================教程开始=============================================================
+
+      1、无论是哪种MOD，安装后第一时间进入此MOD安装文件夹目录，(一般来说路径是[你的游戏游戏安装目录]\GameData\[你要本地化的MOD])开始查找文件
+查找哪些文件呢？
+        1)首先查看该目录下是否存在Localization这个文件夹或是其他带有"Localization"字符串的.cfg文件(有些MOD可能没有这几个文件或文件夹，再说)
+        2)如果有此文件夹,进入该文件夹目录,一般来说你此时能看到一些文件例如："en-us.cfg"(英语语言文件)、"de-de.cfg"(德语语言文件)、"ru.cfg"(俄语语言文件)、"ja.cfg"(日
+语语言文件)、"zh-cn.cfg"(简体中文语言文件)
+
+        3)此时如果有"zh-cn.cfg"这个文件，请直接使用文本编辑器(例如你电脑自带的记事本)打开此文件，若没有，请复制一份"en-us.cfg"到当前目录下并改名成"zh-cn.cfg"(改名后使用你当前使用的文本编
+辑器打开此文件)en-us.cfg和zh-cn.cfg文件对比
+
+        4)可以看到整个文件的整体架构是这么组成的:然后就是你要花时间的地方了，你要把其中的英文替换成你自己翻译好的文字就好了(请注意不同语言文件的Localization下的块字段不同)
+        
+        Localization
+{
+    zh-cn
+    {
+         你要修改的内容
+    }
+}
+
+这种方法只要该mod提供了此类的文件，那么一般你都可以汉化大多数文本了.
+ 但是有时候把zh-cn文件里面的每个词条都汉化完了但是进游戏还是有英文怎么办呢？
+       首先将zh-cn文件与en-us文件进行对比看看是否有缺失的词条文本,然后要确定是该mod的什么地方是英文，是部件的文字说明显示是英文呢，还是其提供的界面是英文。
+       1)如果有缺失词条，将zh-cn文件中缺失的词条从en-us文件复制过来再翻译一遍就好了。
+       2)如果是部件的文字说明是英文，那么，就要稍微花费点功夫了。
+下面来进行一点简单的基础知识普及：
+       所以你安装的mod中的部件文件要加载到游戏里面，这需要遵从一点游戏中的部件加载语法
+       下面随便打开一个mod的部件文件
+可以看到图中有很多字段，我用红色方框框住的部分便是部件主要在游戏中的能显示的文本了.
+其中：
+
+title--该部件在游戏中显示的标题
+manufacturer--该部件在游戏中显示的制造商
+description--该部件在游戏中显示的描述
+
+其实会点英文看到这些字段就能知道大概了。(实际上能改的不止这3个字段，请看本页面末尾)
+然后直接修改这个3个字段等号右边的文字就行了。(建议使用本地化格式)
+
+什么是本地化方法呢？
+如下图的中的
+
+title = #autoLOC_aluminiumPhotonSail_part_title
+
+这个#autoLOC_aluminiumPhotonSail_part_title是在你的语言文件中自定义的一个"变量"(如果不知道什么是变量可以点击此处查看)，继续如图所示
+这么多语言文件都有相同名称的一个变量，游戏调用哪个文件中变量来显示呢？
+
+根据个人的经验，你游戏中用什么语言就调用哪个语言代码块中定义的变量。
+
+比如你用英文就调用en-us{}这个块(大括号内)中的变量.你用简体中文就调用zh-cn{}块中的变量.如果当前语言块没有这个变量，就调用其他语言块中的变量.
+
+注意我这里使用了"块"而不是"文件",因为所有的语言块都可以放在一个文件内,例如Mod"DeepFreeze Continued..."和"Hide Empty Tech Tree Nodes"中的本地化文件(注意,在DeepFreeze Continued...中的本地化文件名为DFLocalization.cfg而Hide Empty Tech Tree Nodes的本地化文件名为HETTN_dictionary.cfg)
+
+
+也就是说，游戏只看.cfg文件中的Localization块内的各种语言块内的变量.
+3)如果是界面为英文,那很大的程度上其文本是写在其DLL文件中了，那怎么办呢？
+
+如果MOD作者公布了源码并且你有一定的C#编程经验，那实际上非常好办，直接下载作者的源码，再在自己的主机上搭建相应的环境，查找源码内中在游戏中出现过的字符串.
+1)引用KSP.Localization库后直接调用官方给的本地化方法Localizer.Format()来对其进行本地化，然后注册个github账号先fork作者的工程上传好本地化后的代码后直接pull request给mod作者，待作者整合后，这个mod就会支持本地化了并影响到以后的更新，相当于你也做了出贡献.
+2)或者你直接修改相应的字符串为中文也行(个人不提倡直接修改，因为MOD是会更新的，mod作者每更新一个版本你就得重新来替换一次，当然如果你不觉得麻烦当我没说)，然后确认无误后编译生成，在放在游戏里，你就可以使用自己的中文mod了
+
+
+(附(可能不完整)：在[part].cfg内可更改的字段:
+PART
+{
+    title
+    description
+    manufacturer
+    MODULE
+    {
+        experimentActionName
+        resetActionName
+        reviewActionName
+        storeActionName
+        toggleName
+        eventOnName
+        eventOffName
+    }
+}
+在[Resouces].cfg内可更改的字段:
+
+RESOURCE_DEFINITION
+{
+    displayName
+}
+
+在[Planet].cfg内可更改的字段:
+Properties
+{    displayName
+    description
+    Biome
+    {
+        displayName
+    }
+}
+
+现在针对代码级别本地化做个大概的教程，图中以KSPI-E为例(如需mod请前往KSP Interstellar Extended官方发布页面，源码下载请前往KSPI-E GitHub页面https://github.com/sswelm/KSP-Interstellar-Extended)
+什么？你不会下载？
+此教程旨在教大家如何手动本地化mod,更多其他信息请自行使用搜索引擎
+
+
+你搭配好环境后，下载源码后打开工程会大概是如第一张图所示：
+这个工程有4个项目分别是FuelSwitch、Interstellar_Redist、PhotonSail和最后的WarpPlugin
+
+
+
+(此MOD既有部件文本又有界面文本，部件文本本地化前面已经说明，这里不再细说.如有不懂欢迎提出问题.)
+现在我们首先在右侧解决方案资源管理器窗口先点开FuelSwitch项目，然后点开"引用"如图所示
+
+你的当前界面会和该图中不一样，其中除了那几个System以外其他都会出现三角形的感叹号(代表该引用文件缺失)
+现在将鼠标移到"引用"上面右键单击,选择"添加引用"
+
+在弹出的窗口中左侧选择浏览，然后点击下方的浏览按钮
+
+
+
+之后进入[你的游戏安装目录]\KSP_x64_Data\Managed内选择缺失的引用库(dll)文件
+
+
+挨个添加引用直到引用内没有感叹号为止如第一张图所示(注意那个999_Scale_Redist可以在当前工程目录下的\GameData\里找到)
+准备工作做好后，下面就开始真正的开始进行本地化操作了
+然后呢(在这里我只是做一个示范)，右侧双击一个.cs文件如图是InterstellarTextureSwitch2.cs
+
+
+
+
+然后假设我现在要对图中的"Default"这个字符串做本地化如图将"Default"替换(当然你也可以直接修改为中文的"默认")为Localizer.Format("#LOC_IFS_TextureSwitch_displayname2")
+
+然后打开里面的语言文件添加上"#LOC_IFS_TextureSwitch_displayname2"这个变量
+
+
+
+接下来就是不停的重复此类工作。
+但值得注意的是像图中的[KSPField(guiActiveEditor = true, guiActive = true, guiName = "Wavelength Name" 这样的"属性(Attribute)"里面的guiName字符串是不能调用Localizer.Format()方法的这个时候直接把"Wavelength Name"的替换成"#xxxxxxx"就好了(当然你直接替换文本也没有任何问题)
+然后保存-生成-把生成的dll文件放入游戏里替换mod的dll文件
+这个教程就结束了.
+https://bbs.3dmgame.com/thread-5989166-1-1.html
+
+(https://forum.kerbalspaceprogram.com/index.php?/topic/172026-181-1101-ksp-interstellar-extended-12531-support-thread/)
